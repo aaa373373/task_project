@@ -1,6 +1,10 @@
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import AuthLayout from "@/components/AuthLayout";
 
@@ -8,7 +12,64 @@ import FacebookIcon from "../../../public/facebook_icon.svg";
 import GoogleIcon from "../../../public/gogle_icon.svg";
 import ManagementImage from "../../../public/management_icon.svg";
 
-const login = () => {
+import { signinUser } from "../../../utils";
+
+const Login = () => {
+  const router = useRouter();
+
+  const [loginDetails, setLoginDetails] = useState({
+    email: "",
+    password: "",
+  });
+  const [passwordErr, setPasswordErr] = useState(null);
+  const [emailErr, setEmailErr] = useState(null);
+
+  // Update state when the value changes
+  function handleChange(e) {
+    setLoginDetails((values) => {
+      return {
+        ...values,
+        [e.target.name]: e.target.value,
+      };
+    });
+  }
+
+  // Function to log in users when the submit button is triggered
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    // Check if any of the form field is empty
+    if (
+      !loginDetails.email ||
+      loginDetails.email.trim() === "" ||
+      loginDetails.email.trim().length < 1
+    ) {
+      setEmailErr("Provide your email address");
+    }
+
+    if (
+      !loginDetails.password ||
+      loginDetails.password.trim() === "" ||
+      loginDetails.password.trim().length < 1
+    ) {
+      setPasswordErr("Provide your password");
+    }
+
+    if (emailErr || passwordErr) return;
+
+    const result = await signinUser(loginDetails);
+
+    console.log("Login user successfully.");
+    console.log(result);
+
+    if (result.status === "failed") {
+      toast.error(result.message);
+      return;
+    }
+
+    router.push("/dashboard");
+  }
+
   return (
     <AuthLayout
       title="TaskMaster | Login"
@@ -73,8 +134,14 @@ const login = () => {
                   className="h-full w-full p-3 font-medium bg-white outline-none"
                   type="email"
                   placeholder="Email"
+                  name="email"
+                  onChange={handleChange}
+                  value={loginDetails.email}
                 />
               </div>
+              {emailErr && (
+                <p className="font-bold text-xs text-red-500">{emailErr}</p>
+              )}
 
               {/* Password Form */}
               <div className="mt-3 h-12 flex items-center border border-gray-200 rounded-md">
@@ -85,15 +152,24 @@ const login = () => {
                   className="h-full w-full p-3 font-medium bg-white outline-none"
                   type="password"
                   placeholder="Password"
+                  name="password"
+                  onChange={handleChange}
+                  value={loginDetails.password}
                 />
               </div>
+              {passwordErr && (
+                <p className="font-bold text-xs text-red-500">{passwordErr}</p>
+              )}
 
               <p className="mt-3 font-bold text-right text-xs text-blue-700">
                 Forgot Password?
               </p>
 
               {/* Log Btn */}
-              <button className="mt-10 h-12 w-full text-white bg-blue-700 rounded-md">
+              <button
+                className="mt-10 h-12 w-full text-white bg-blue-700 rounded-md"
+                onClick={handleSubmit}
+              >
                 Login
               </button>
 
@@ -129,4 +205,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default Login;

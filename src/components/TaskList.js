@@ -1,7 +1,7 @@
 import React from "react";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
-const TaskList = ({ priority, task, completed }) => {
+const TaskList = ({ id, priority, task, completed, handleStatus }) => {
   return (
     <>
       <div className="mb-4 p-3 h-12 w-full flex items-center rounded-xl bg-white">
@@ -29,7 +29,10 @@ const TaskList = ({ priority, task, completed }) => {
 
         {completed === true ? (
           <div>
-            <span>
+            <span
+              className="cursor-pointer"
+              onClick={() => handleStatus(id, completed)}
+            >
               <CheckCircleIcon
                 title="Completed"
                 className="w-6 text-blue-700"
@@ -37,7 +40,10 @@ const TaskList = ({ priority, task, completed }) => {
             </span>
           </div>
         ) : (
-          <span className="h-5 w-5 inline-block border-2 border-gray-300 rounded-full"></span>
+          <span
+            className="h-5 w-5 inline-block border-2 border-gray-300 rounded-full cursor-pointer"
+            onClick={() => handleStatus(id, completed)}
+          ></span>
         )}
       </div>
     </>

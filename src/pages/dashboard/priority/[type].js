@@ -2,15 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { RocketLaunchIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
-import {
-  doc,
-  setDoc,
-  addDoc,
-  collection,
-  onSnapshot,
-  where,
-  query,
-} from "firebase/firestore";
+import { collection, onSnapshot, where, query } from "firebase/firestore";
 
 import Layout from "@/components/Layout";
 import TaskList from "@/components/TaskList";
@@ -21,14 +13,14 @@ import {
   writeTaskToDb,
   updateTaskInDb,
   getCurrentUserDetails,
-} from "../../../utils";
+} from "../../../../utils";
 
-import { db } from "../../../firebase.config";
+import { db } from "../../../../firebase.config";
 
-const Index = () => {
+const PriorityType = () => {
   const router = useRouter();
 
-  const [priority, setPriority] = useState("low");
+  const [priority, setPriority] = useState(router.query.type);
   const [task, setTask] = useState(null);
   const [user, setUser] = useState(null);
   const [availableTasks, setAvalaibleTaskes] = useState(null);
@@ -55,7 +47,12 @@ const Index = () => {
 
     if (user) {
       // Fetch user tasks in realtime
-      const q = query(collection(db, "tasks"), where("uid", "==", user.uid));
+      const q = query(
+        collection(db, "tasks"),
+        where("uid", "==", user.uid),
+        where("priority", "==", router.query.type)
+      );
+
       onSnapshot(q, (querySnapshot) => {
         const tasks = [];
         querySnapshot.forEach((doc) => {
@@ -100,7 +97,7 @@ const Index = () => {
         <div className="h-full flex items-start justify-start rounded-xl overflow-hidden">
           {/* Navigation */}
           <DashboardNav
-            activeLink="task"
+            activeLink={router.query.type}
             firstName={userDetails?.firstName}
             lastName={userDetails?.lastName}
           />
@@ -108,7 +105,9 @@ const Index = () => {
           {/* Tasks list page */}
           <div className="h-full w-full p-56">
             <div>
-              <p className="font-light text-2xl text-white">Tasks list</p>
+              <p className="font-light text-2xl text-white capitalize">
+                {router.query.type} Tasks lists
+              </p>
 
               {/* Add Task */}
               <div className="mt-8 p-3 h-12 w-full flex items-center rounded-xl bg-white">
@@ -192,10 +191,6 @@ const Index = () => {
                     )}
                   </span>
                 </div>
-                {/* <div>
-                  <label htmlFor="priority">Select</label>
-                  <input type="date" id="priority" />
-                </div> */}
               </div>
 
               {/* Render Tasks */}
@@ -225,4 +220,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default PriorityType;

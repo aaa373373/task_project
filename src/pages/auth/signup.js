@@ -1,10 +1,14 @@
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   EnvelopeIcon,
   LockClosedIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import AuthLayout from "@/components/AuthLayout";
 
@@ -12,7 +16,81 @@ import FacebookIcon from "../../../public/facebook_icon.svg";
 import GoogleIcon from "../../../public/gogle_icon.svg";
 import ManagementImage from "../../../public/management_icon.svg";
 
-const signup = () => {
+import { createAccount } from "../../../utils";
+
+const Signup = () => {
+  const router = useRouter();
+
+  const [registerDetails, setRegisterDetails] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
+  });
+  const [firstNameErr, setFirstNameErr] = useState(null);
+  const [lastNameErr, setLastNameErr] = useState(null);
+  const [passwordErr, setPasswordErr] = useState(null);
+  const [emailErr, setEmailErr] = useState(null);
+
+  // Update state when the value changes
+  function handleChange(e) {
+    setRegisterDetails((values) => {
+      return {
+        ...values,
+        [e.target.name]: e.target.value,
+      };
+    });
+  }
+
+  // Function to create account when the submit button is triggered
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    // Check if any of the form field is empty
+    if (
+      !registerDetails.first_name ||
+      registerDetails.first_name.trim() === "" ||
+      registerDetails.first_name.trim().length < 1
+    ) {
+      setFirstNameErr("Provide your first name");
+    }
+
+    if (
+      !registerDetails.last_name ||
+      registerDetails.last_name.trim() === "" ||
+      registerDetails.last_name.trim().length < 1
+    ) {
+      setLastNameErr("Provide your last name");
+    }
+
+    if (
+      !registerDetails.email ||
+      registerDetails.email.trim() === "" ||
+      registerDetails.email.trim().length < 1
+    ) {
+      setEmailErr("Provide your email address");
+    }
+
+    if (
+      !registerDetails.password ||
+      registerDetails.password.trim() === "" ||
+      registerDetails.password.trim().length < 1
+    ) {
+      setPasswordErr("Provide your password");
+    }
+
+    if (firstNameErr || lastNameErr || emailErr || passwordErr) return;
+
+    const result = await createAccount(registerDetails);
+
+    if (result.status === "failed") {
+      toast.error(result.message);
+      return;
+    }
+
+    router.push("/dashboard");
+  }
+
   return (
     <AuthLayout
       title="TaskMaster | Signup"
@@ -77,8 +155,14 @@ const signup = () => {
                   className="h-full w-full p-3 font-medium bg-white outline-none"
                   type="text"
                   placeholder="First name"
+                  name="first_name"
+                  onChange={handleChange}
+                  value={registerDetails.first_name}
                 />
               </div>
+              {firstNameErr && (
+                <p className="font-bold text-xs text-red-500">{firstNameErr}</p>
+              )}
 
               {/* Last name form */}
               <div className="mt-3 h-12 flex items-center border border-gray-200 rounded-md">
@@ -88,9 +172,15 @@ const signup = () => {
                 <input
                   className="h-full w-full p-3 font-medium bg-white outline-none"
                   type="text"
-                  placeholder="Email"
+                  placeholder="Last name"
+                  name="last_name"
+                  onChange={handleChange}
+                  value={registerDetails.last_name}
                 />
               </div>
+              {lastNameErr && (
+                <p className="font-bold text-xs text-red-500">{lastNameErr}</p>
+              )}
 
               {/* Email Form */}
               <div className="mt-3 h-12 flex items-center border border-gray-200 rounded-md">
@@ -101,8 +191,14 @@ const signup = () => {
                   className="h-full w-full p-3 font-medium bg-white outline-none"
                   type="email"
                   placeholder="Email"
+                  name="email"
+                  onChange={handleChange}
+                  value={registerDetails.email}
                 />
               </div>
+              {emailErr && (
+                <p className="font-bold text-xs text-red-500">{emailErr}</p>
+              )}
 
               {/* Password Form */}
               <div className="mt-3 h-12 flex items-center border border-gray-200 rounded-md">
@@ -113,20 +209,29 @@ const signup = () => {
                   className="h-full w-full p-3 font-medium bg-white outline-none"
                   type="password"
                   placeholder="Password"
+                  name="password"
+                  onChange={handleChange}
+                  value={registerDetails.password}
                 />
               </div>
+              {passwordErr && (
+                <p className="font-bold text-xs text-red-500">{passwordErr}</p>
+              )}
 
               <p className="mt-3 font-bold text-right text-xs text-blue-700">
                 Forgot Password?
               </p>
 
               {/* Log Btn */}
-              <button className="mt-10 h-12 w-full text-white bg-blue-700 rounded-md">
+              <button
+                className="mt-10 h-12 w-full text-white bg-blue-700 rounded-md"
+                onClick={handleSubmit}
+              >
                 Signup
               </button>
 
               <p className="mt-5 font-medium text-center">
-                Already have an account?
+                Already have an account?{" "}
                 <Link className="text-blue-700" href="/auth/login">
                   Login
                 </Link>
@@ -157,4 +262,4 @@ const signup = () => {
   );
 };
 
-export default signup;
+export default Signup;
