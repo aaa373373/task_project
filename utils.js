@@ -126,6 +126,11 @@ export const updateTaskInDb = async (doc_id, data) => {
   await updateDoc(washingtonRef, data);
 };
 
+// Add task to db
+export const writeNoteToDb = async (user_id, data) => {
+  await addDoc(collection(db, "notes"), data);
+};
+
 // Get user events in real time
 // export const fetchUserTasksFromDb = async (user_id) => {
 //   const q = query(collection(db, "tasks"), where("uid", "==", user_id));
@@ -143,6 +148,28 @@ export const updateTaskInDb = async (doc_id, data) => {
 export const getCurrentUserDetails = async (doc_id) => {
   try {
     const docRef = doc(db, "users", doc_id);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      return { ...docSnap.data() };
+    } else {
+      // docSnap.data() will be undefined in this case
+      return { status: "failed", message: "User record does not exist." };
+    }
+  } catch (error) {
+    console.log("An error occured fetching user details ", error);
+    return {
+      status: "failed",
+      message: "An error occured fetching user details.",
+    };
+  }
+};
+
+// Get retrieve single note for user
+export const getSingleUserNOte = async (doc_id) => {
+  try {
+    const docRef = doc(db, "notes", doc_id);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {

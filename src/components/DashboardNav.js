@@ -92,7 +92,7 @@ const DashboardNav = ({ activeLink, firstName, lastName }) => {
         </Link>
 
         <Link
-          href="#"
+          href="/dashboard/notes"
           className={`mt-5 flex items-center font-medium ${
             activeLink === "notes" ? "text-blue-700" : "text-gray-500"
           }`}

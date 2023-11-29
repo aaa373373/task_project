@@ -70,7 +70,10 @@ const Index = () => {
   async function handleTask(e) {
     e.preventDefault();
 
-    if (task.trim().length < 1) toast.error("Please enter a task");
+    if (task.trim().length < 1) {
+      toast.error("Please enter a task");
+      return;
+    }
 
     await writeTaskToDb(user.uid, {
       firstName: userDetails.firstName,

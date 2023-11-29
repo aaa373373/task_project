@@ -9,8 +9,8 @@ import { getFirestore } from "firebase/firestore";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API,
-  authDomain: "taskproject-17145.firebaseapp.com",
-  projectId: "taskproject-17145",
+  authDomain: "taskmaster-ff3ba.firebaseapp.com",
+  projectId: "taskmaster-ff3ba",
   storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_APP_ID,
